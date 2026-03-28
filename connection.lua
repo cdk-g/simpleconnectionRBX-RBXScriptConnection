@@ -41,13 +41,13 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 	
 	table.insert(self.connections, connection)
 	
-	
-	-- if refresh is used it will create a new connection and store it in the refreshdata
+	-- if refresh is used it will create a new connection and store it 	 the refreshdata
 	if isrefresh then
-		table.insert(self.refreshdata, {signal = sl, callback = cb, isrefresh = isrefresh})
+		table.insert(self.refreshdata, {signal = sl, callback = cb})
 	end
-	
-		
+
+
+
 	warn(self.connections) 
 	
 	return connection
@@ -65,10 +65,8 @@ function cnctables:clearconnections()
 	end
 	
 	-- creates a simple connection
-	if self.refreshdata.isrefresh and self.refreshdata and self.refreshdata.signal and self.refreshdata.callback then
-		self:createconnection(self.refreshdata.signal, self.refreshdata.callback, true)
-	else
-		print('true')
+	for _, data in ipairs(self.refreshdata) do
+		self:createconnection(data.signal, data.callback, true)
 	end
 	
 	table.clear(self.connections)
