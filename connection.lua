@@ -13,7 +13,7 @@
    "isrefresh" is used then it creates another like "clone" of the connection then deletes the old one...
    
    
-   module.new():clearconnections(isrefresh) <-- clears all connections "isrefresh" if you gonna rlly refresh the connection
+   module.new():clearconnections() <-- clears all connections
    
    module.new():getconnections() <-- gets all connections
    
@@ -44,11 +44,10 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 	
 	-- if refresh is used it will create a new connection and store it in the refreshdata
 	if isrefresh then
-		self.refreshdata.signal = connection
-		self.refreshdata.callback = cb
+		table.insert(self.refreshdata, {signal = sl, callback = cb})
 	end
 	
-	
+		
 	warn(self.connections) 
 	
 	return connection
@@ -68,6 +67,8 @@ function cnctables:clearconnections(isrefresh : boolean)
 	-- creates a simple connection
 	if isrefresh and self.refreshdata.signal and self.refreshdata.callback then
 		self:createconnection(self.refreshdata.signal, self.refreshdata.callback, true)
+	else
+		print('true')
 	end
 	
 	table.clear(self.connections)
