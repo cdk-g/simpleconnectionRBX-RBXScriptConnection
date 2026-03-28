@@ -13,7 +13,7 @@
    "isrefresh" is used then it creates another like "clone" of the connection then deletes the old one...
    
    
-   module.new():clearconnections() <-- clears all connections
+   module.new():clearconnections(isrefresh) <-- clears all connections "isrefresh" if you gonna rlly refresh the connection
    
    module.new():getconnections() <-- gets all connections
    
