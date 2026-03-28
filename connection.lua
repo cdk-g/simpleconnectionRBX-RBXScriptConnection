@@ -67,7 +67,7 @@ function cnctables:clearconnections()
 	
 	-- creates a simple connection
 	for _, data in ipairs(self.refreshdata) do
-		self:createconnection(data.signal, data.callback, true)
+		self:createconnection(data.signal, data.callback, false) --"false" to avoid duplications
 	end
 	
 	table.clear(self.connections)
