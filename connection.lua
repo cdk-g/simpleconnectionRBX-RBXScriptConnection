@@ -73,13 +73,15 @@ function cnctables:clearconnections()
 		v:Disconnect()
 
 	end
+	
+	table.clear(self.connections)
 
 	-- creates a simple connection
 	for _, data in ipairs(self.refreshdata) do
 		self:createconnection(data.signal, data.callback, false)
 	end
 
-	table.clear(self.connections)
+
 end
 
 return cnctables
