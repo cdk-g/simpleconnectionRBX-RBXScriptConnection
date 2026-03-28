@@ -11,7 +11,8 @@
    module.new():createconnection(signal, callback, isrefresh)
    
    "isrefresh" is used then it creates another like "clone" of the connection then deletes the old one...
-   
+
+   and auto-reconnects refreshable connections
    
    module.new():clearconnections() <-- clears all connections
    
