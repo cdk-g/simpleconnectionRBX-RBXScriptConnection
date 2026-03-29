@@ -84,13 +84,14 @@ end
 function cnctables:clearconnections()
 	for _, v in ipairs(self.connections) do
 		v:Disconnect()
-	end
+	end	
 
 	table.clear(self.connections)
-
+   
+   --refresh the refreshable connections:)
 	for _, data in ipairs(self.refreshdata) do
 		if data.refresh then
-			self:createconnection(data.signal, data.callback, false)
+			self:createconnection(data.signal, data.callback, true)
 		end
 	end
 
