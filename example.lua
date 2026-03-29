@@ -7,13 +7,13 @@ local connection = connectionModule.new()
 
 --true, when function run, it creates new "clone" itself
 cnt:createconnection(color1_part.ClickDetector.MouseClick:Connect(function()
-	print(true)
-end), true)
+	print('true')
+end), true
 
 --false, when function run, it disconnects 
 
 cnt:createconnection(color1_part.ClickDetector.MouseClick:Connect(function()
-	print(true)
+	print('true')
 end), false)
 
 
