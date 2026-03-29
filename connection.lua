@@ -11,12 +11,17 @@
    module.new():createconnection(signal, callback, isrefresh)
    
    "isrefresh" is used then it creates another like "clone" of the connection then deletes the old one...
+   
+   false: when function is run then it disconnects itself,
+   true: when function is run then it disconnects itself and creates another connection of itself
 
    and auto-reconnects refreshable connections
    
    module.new():clearconnections() <-- clears all connections
    
    module.new():getconnections() <-- gets all connections
+
+  
    
 ]]-- 
 
@@ -36,11 +41,21 @@ end
 
 --creates connection!
 function cnctables:createconnection(sl, cb, isrefresh: boolean)
+	local connection
+	local fn
 
+	fn = function(...)
+		cb(...)
 
-	local connection = sl:Connect(cb)
-	  
-	  
+		if isrefresh == false and connection then
+			connection:Disconnect()
+		elseif isrefresh == true then
+			self:clearconnections()
+		end
+	end
+
+	connection = sl:Connect(fn)
+
 	table.insert(self.connections, connection)
 
 	-- if refresh is used it will create a new connection and store it 	 the refreshdata
@@ -50,15 +65,14 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 			if data.signal == sl and data.callback == cb then
 				exists = true
 				break
-			end
+			end	
 		end
 		if not exists then
-			table.insert(self.refreshdata, {signal = sl, callback = cb})
+			table.insert(self.refreshdata, {signal = sl, callback = cb,refresh = isrefresh})
 		end
 	end
 
-
-	warn(self.connections) 
+	warn(self.connections)
 
 	return connection
 end
@@ -68,19 +82,17 @@ function cnctables:getconnections()
 end
 
 function cnctables:clearconnections()
-
 	for _, v in ipairs(self.connections) do
 		v:Disconnect()
-
 	end
-	
+
 	table.clear(self.connections)
 
-	-- creates a simple connection
 	for _, data in ipairs(self.refreshdata) do
-		self:createconnection(data.signal, data.callback, false)
+		if data.refresh then
+			self:createconnection(data.signal, data.callback, false)
+		end
 	end
-
 
 end
 
