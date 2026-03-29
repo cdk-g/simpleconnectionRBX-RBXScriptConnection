@@ -64,7 +64,7 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 	table.insert(self.connections, connection)
 
 	-- if refresh is used it will create a new connection and store it 	 the refreshdata
-	if mode and typeof(sl) ~= "RBXScriptConnection" then
+	if isrefresh and typeof(sl) ~= "RBXScriptConnection" then
 		local exists = false
 		for _, data in ipairs(self.refreshdata) do
 			if data.signal == sl and data.callback == cb then
@@ -73,7 +73,7 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 			end
 		end
 		if not exists then
-			table.insert(self.refreshdata, {signal = sl, callback = cb, refresh = mode})
+			table.insert(self.refreshdata, {signal = sl, callback = cb, refresh = isrefresh})
 		end
 	end
 
