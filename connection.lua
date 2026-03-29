@@ -55,7 +55,9 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 				connection:Disconnect()
 			elseif isrefresh == true and connection then
 				connection:Disconnect()
-				self:createconnection(sl, cb, true)
+				task.defer(function()
+					self:createconnection(sl, cb, true)
+				end)
 			end
 		end
 
