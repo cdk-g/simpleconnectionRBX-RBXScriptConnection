@@ -44,31 +44,36 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 	local connection
 	local fn
 
-	fn = function(...)
-		cb(...)
+	if typeof(sl) == "RBXScriptConnection" then
+		connection = sl
+		isrefresh = cb
+	else
+		fn = function(...)
+			cb(...)
 
-		if isrefresh == false and connection then
-			connection:Disconnect()
-		elseif isrefresh == true then
-			self:clearconnections()
+			if isrefresh == false and connection then
+				connection:Disconnect()
+			elseif isrefresh == true then
+				self:clearconnections()
+			end
 		end
-	end
 
-	connection = sl:Connect(fn)
+		connection = sl:Connect(fn)
+	end
 
 	table.insert(self.connections, connection)
 
 	-- if refresh is used it will create a new connection and store it 	 the refreshdata
-	if isrefresh then
+	if mode and typeof(sl) ~= "RBXScriptConnection" then
 		local exists = false
 		for _, data in ipairs(self.refreshdata) do
 			if data.signal == sl and data.callback == cb then
 				exists = true
 				break
-			end	
+			end
 		end
 		if not exists then
-			table.insert(self.refreshdata, {signal = sl, callback = cb,refresh = isrefresh})
+			table.insert(self.refreshdata, {signal = sl, callback = cb, refresh = mode})
 		end
 	end
 
