@@ -5,14 +5,24 @@ local connectionModule = require(script.cntion)
 
 local connection = connectionModule.new()
 
+--true, when function run, it creates new "clone" itself
 connection:createconnection(clickdetector.MouseClick, function()
 	print('true')
 
 	
 end, true)
-	
-connection:clearconnections() -- refresh the refreshable connections
 
+--false, when function run, it disconnects 
+
+connection:createconnection(clickdetector.MouseClick, function()
+	print('true')
+
+	
+end, false)
+
+
+
+--no need to put clearconnections() as it's handle by the module
 
 
 
