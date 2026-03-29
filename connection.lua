@@ -53,8 +53,9 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 
 			if isrefresh == false and connection then
 				connection:Disconnect()
-			elseif isrefresh == true then
-				self:clearconnections()
+			elseif isrefresh == true and connection then
+				connection:Disconnect()
+				self:createconnection(sl, cb, true)
 			end
 		end
 
