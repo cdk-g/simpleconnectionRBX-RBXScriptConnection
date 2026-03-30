@@ -28,7 +28,6 @@
 local cnctables = {}
 cnctables.__index = cnctables
 
-
 function cnctables.new()
 	local self = setmetatable({}, cnctables)
 
@@ -36,73 +35,66 @@ function cnctables.new()
 	self.refreshdata = {}
 
 	return self
-end	
+end
 
-
---creates connection!
+-- refresh mode rebuilds itself after firing once
+--@param sl RBXScriptSignal | RBXScriptConnection
+--@param cb function
+--@return conn
 function cnctables:createconnection(sl, cb, isrefresh: boolean)
 	local connection
 	local fn
+	local i
 
 	if typeof(sl) == "RBXScriptConnection" then
-		connection = sl
-		isrefresh = cb
-	else
-		fn = function(...)
-			cb(...)
-
-			if isrefresh == false and connection then
-				connection:Disconnect()
-			elseif isrefresh == true and connection then
-				connection:Disconnect()
-				task.defer(function()
-					self:createconnection(sl, cb, true)
-				end)
-			end
-		end
-
-		connection = sl:Connect(fn)
+		table.insert(self.connections, sl)
+		return sl
 	end
 
-	table.insert(self.connections, connection)
+	assert(typeof(sl) == "RBXScriptSignal", "its not a signal!")
+	assert(type(cb) == "function", "callback has to be a function")
 
-	-- if refresh is used it will create a new connection and store it 	 the refreshdata
-	if isrefresh and typeof(sl) ~= "RBXScriptConnection" then
-		local exists = false
-		for _, data in ipairs(self.refreshdata) do
-			if data.signal == sl and data.callback == cb then
-				exists = true
+	fn = function(...)
+		cb(...)
+		if not connection then return end
+
+		i = nil
+		for idx, conn in ipairs(self.connections) do
+			if conn == connection then
+				i = idx
 				break
 			end
 		end
-		if not exists then
-			table.insert(self.refreshdata, {signal = sl, callback = cb, refresh = isrefresh})
+
+		connection:Disconnect()
+		if i then table.remove(self.connections, i) end
+		if isrefresh == true then
+			task.defer(function()
+				self:createconnection(sl, cb, true)
+			end)
 		end
 	end
 
-	warn(self.connections)
+	connection = sl:Connect(fn)
+	table.insert(self.connections, connection)
 
 	return connection
 end
 
+--@return table
 function cnctables:getconnections()
 	return self.connections
 end
 
 function cnctables:clearconnections()
-	for _, v in ipairs(self.connections) do
-		v:Disconnect()
-	end	
+	local connections = self.connections
 
-	table.clear(self.connections)
-   
-   --refresh the refreshable connections:)
-	for _, data in ipairs(self.refreshdata) do
-		if data.refresh then
-			self:createconnection(data.signal, data.callback, true)
-		end
+	for _, v in ipairs(connections) do
+		if v and v.Connected then v:Disconnect() end
 	end
 
+	table.clear(connections)
+	table.clear(self.refreshdata)
 end
 
 return cnctables
