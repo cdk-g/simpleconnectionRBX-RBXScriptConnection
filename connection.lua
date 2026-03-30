@@ -45,6 +45,7 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 	local connection
 	local fn
 	local i
+	local exists
 
 	if typeof(sl) == "RBXScriptConnection" then
 		table.insert(self.connections, sl)
@@ -53,6 +54,24 @@ function cnctables:createconnection(sl, cb, isrefresh: boolean)
 
 	assert(typeof(sl) == "RBXScriptSignal", "its not a signal!")
 	assert(type(cb) == "function", "callback has to be a function")
+
+	if isrefresh then
+		exists = false
+		for _, data in ipairs(self.refreshdata) do
+			if data.signal == sl and data.callback == cb then
+				exists = true
+				break
+			end
+		end
+
+		if not exists then
+			table.insert(self.refreshdata, {
+				signal = sl,
+				callback = cb,
+				refresh = true,
+			})
+		end
+	end
 
 	fn = function(...)
 		cb(...)
@@ -87,14 +106,19 @@ function cnctables:getconnections()
 end
 
 function cnctables:clearconnections()
-	local connections = self.connections
+	local refreshdata = self.refreshdata
 
-	for _, v in ipairs(connections) do
+	for _, v in ipairs(self.connections) do
 		if v and v.Connected then v:Disconnect() end
 	end
 
-	table.clear(connections)
-	table.clear(self.refreshdata)
+	table.clear(self.connections)
+
+	for _, data in ipairs(refreshdata) do
+		if data.refresh then
+			self:createconnection(data.signal, data.callback, true)
+		end
+	end
 end
 
 return cnctables
