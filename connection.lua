@@ -21,7 +21,9 @@
    
    module.new():getconnections() <-- gets all connections
 
-  
+
+
+  this project is very useless, my brain is like noobish 
    
 ]]-- 
 
